@@ -1,4 +1,4 @@
-package com.notarius.lepetite.PetiteShortener;
+package com.notarius.lepetite.PetiteShortener.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

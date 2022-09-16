@@ -8,15 +8,15 @@ import org.springframework.data.annotation.Id;
 public class DictionaryEntry {
 
     @Getter @Setter @NonNull
-    private String full_url;
+    private String fullurl;
     @Getter @Setter @Id @NonNull
-    private String short_url;
+    private String shorturl;
 
     @Override
     public String toString() {
         return "DictionaryEntry{" +
-                "full_url='" + full_url + '\'' +
-                ", short_url='" + short_url + '\'' +
+                "full_url='" + fullurl + '\'' +
+                ", short_url='" + shorturl + '\'' +
                 '}';
     }
 }
