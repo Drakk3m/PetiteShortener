@@ -18,3 +18,7 @@ There are several ways to create a Shortener.
 2. We could deconstitute the URL into base64 using mathematical processing
 
 For better understanding and using most of the capabilities needed, in this project we'll use the first option, so we can experiment a little with Java's JPA and... well... MongoDB
+
+# TODO
+1. Unit Tests `Sorry, had no time to finish the tests so it's better to remove them` 😢
+2. Swagger page with OpenApi documentation
