@@ -4,8 +4,8 @@ A little URL Shortener using Spring Boot and Mongo DB
 
 the project will create a new service that will expose 3 endpoint
 > __POST__ /petiteshortener will create a shortened URL from a normal URL  
-> __POST__ /s/assign will assign an alias to a provided URL  
 > __GET__ /s/{shortURL} will search for the shortened URL in the database and will redirect to the associated address  
+> __POST__ /s/assign will assign an alias to a provided URL `probably usefull for a PRO version of the application` :wink:
 
 ## Some validations made
 - URL is validated for correct structure.
