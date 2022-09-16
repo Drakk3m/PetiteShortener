@@ -8,7 +8,7 @@ $(document).ready(function(){
         }),
         contentType : "application/json;charset=utf-8",
         success : function(data){
-            $("#processedurl").val(data.short_url);
+            $("#processedurl").val(data.shorturl);
         }
     });
   });
