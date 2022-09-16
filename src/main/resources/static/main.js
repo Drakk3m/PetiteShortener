@@ -4,7 +4,7 @@ $(document).ready(function(){
         type : 'POST',
         url : 'http://localhost:8080/petiteshortener',
         data : JSON.stringify({
-            "full_url" : $("#fullurl").val()
+            "fullurl" : $("#fullurl").val()
         }),
         contentType : "application/json;charset=utf-8",
         success : function(data){

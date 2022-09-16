@@ -24,6 +24,7 @@ public class PetiteRestController {
     private final String REDIRECT_SUCCESS = "Alias found. Redirecting.";
     private final String DUPLICATED_ENTRY = "URL already in shortened.";
     private final String BAD_URL = "Given URL is not a valid address.";
+    private final String URL_FOUND = "URL already in the system. Returning assigned shortener";
 
     @Autowired
     private ShortenerMongoRepository persistor;
@@ -34,23 +35,29 @@ public class PetiteRestController {
 
         if (!ShortenerUtils.validateURL(newEntry.getFullurl()))
         {
-            log.error(BAD_URL);
+            log.error(BAD_URL + " Provided URL: " + newEntry.getFullurl());
             throw new BadRequestException(BAD_URL);
         }
         else if (persistor.existsByFullurl(newEntry.getFullurl()))
         {
-            log.info("URL already in the system");
+            log.info(URL_FOUND);
             entryValue = persistor.findByFullurl(newEntry.getFullurl()).get().getShorturl();
+
+            log.info("Process fulfilled successfuly. Provided short identifier is " + entryValue);
         }
         else {
             do {
                 entryValue = ShortenerUtils.entryGenerator();
+
                 log.info("Generated a new short phrase");
+
             } while (persistor.existsById(entryValue));
 
             log.info("Found an unused identifier for they new entry");
 
             newEntry.setShorturl(BASE_URL + entryValue);
+
+            log.info("Process fulfilled successfuly. Provided short identifier is " + BASE_URL + entryValue);
             persistor.save(newEntry);
         }
 
@@ -64,7 +71,6 @@ public class PetiteRestController {
         log.info(REDIRECT_SUCCESS);
         response.sendRedirect(entry.getFullurl());
     }
-
 
     @RequestMapping(value = "/s/assign", method = RequestMethod.POST)
     public ResponseEntity<Object> AssignAliasToURL(@RequestBody @NonNull DictionaryEntry newEntry, @RequestBody @NonNull String urlAlias) throws BadRequestException {
