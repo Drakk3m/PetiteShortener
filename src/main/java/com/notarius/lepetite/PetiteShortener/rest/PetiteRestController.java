@@ -14,37 +14,50 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController @Log4j2
 public class PetiteRestController {
 
-    String BASE_URL = "http://localhost:8080/petiteshortener/s/";
-    String ALIAS_TAKEN = "Alias is already taken.";
-    String KEY_NOT_FOUND = "Alias not found in generated strings";
-    String REDIRECT_SUCCESS = "Alias found. Redirecting.";
-    String DUPLICATED_ENTRY = "URL already in shortened.";
+    private final String BASE_URL = "http://localhost:8080/s/";
+    private final String ALIAS_TAKEN = "Alias is already taken.";
+    private final String KEY_NOT_FOUND = "Alias not found in generated strings.";
+    private final String REDIRECT_SUCCESS = "Alias found. Redirecting.";
+    private final String DUPLICATED_ENTRY = "URL already in shortened.";
+    private final String BAD_URL = "Given URL is not a valid address.";
 
     @Autowired
     private ShortenerMongoRepository persistor;
 
     @RequestMapping(value = "/petiteshortener", method = RequestMethod.POST)
-    public ResponseEntity<Object> getShortURL(@RequestBody DictionaryEntry newEntry)
-    {
+    public ResponseEntity<Object> getShortURL(@RequestBody DictionaryEntry newEntry) throws BadRequestException {
         String entryValue = "";
-        do {
-            entryValue = ShortenerUtils.entryGenerator();
-            log.info("Generated a new short phrase");
-        } while (persistor.existsById(entryValue));
 
-        newEntry.setShorturl(BASE_URL+entryValue);
-        persistor.save(newEntry);
+        if (!ShortenerUtils.validateURL(newEntry.getFullurl()))
+        {
+            log.error(BAD_URL);
+            throw new BadRequestException(BAD_URL);
+        }
+        else if (persistor.existsByFullurl(newEntry.getFullurl()))
+        {
+            log.info("URL already in the system");
+            entryValue = persistor.findByFullurl(newEntry.getFullurl()).get().getShorturl();
+        }
+        else {
+            do {
+                entryValue = ShortenerUtils.entryGenerator();
+                log.info("Generated a new short phrase");
+            } while (persistor.existsById(entryValue));
 
-        return new ResponseEntity<Object>(entryValue, HttpStatus.OK);
+            log.info("Found an unused identifier for they new entry");
+
+            newEntry.setShorturl(BASE_URL + entryValue);
+            persistor.save(newEntry);
+        }
+
+        return new ResponseEntity<>(entryValue, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/petiteshortener/s/{shortURL}", method = RequestMethod.GET)
+    @RequestMapping(value = "/s/{shortURL}", method = RequestMethod.GET)
     public void getFullURL(HttpServletResponse response, @PathVariable("shortURL") String shortURL) throws IOException, NotFoundException {
         DictionaryEntry entry = persistor.findById(shortURL).orElseThrow(() -> new NotFoundException(KEY_NOT_FOUND));
 
@@ -53,15 +66,19 @@ public class PetiteRestController {
     }
 
 
-    @RequestMapping(value = "/petiteshortener/assign", method = RequestMethod.POST)
+    @RequestMapping(value = "/s/assign", method = RequestMethod.POST)
     public ResponseEntity<Object> AssignAliasToURL(@RequestBody @NonNull DictionaryEntry newEntry, @RequestBody @NonNull String urlAlias) throws BadRequestException {
-        if (persistor.existsById(urlAlias))
+        if (!ShortenerUtils.validateURL(newEntry.getFullurl()))
+        {
+            log.error(BAD_URL);
+            throw new BadRequestException(BAD_URL);
+        } 
+        else if (persistor.existsById(urlAlias))
         {
             log.error(ALIAS_TAKEN);
             throw new BadRequestException(ALIAS_TAKEN);
         }
-
-        if (persistor.existsByFullurl(newEntry.getFullurl()))
+        else if (persistor.existsByFullurl(newEntry.getFullurl()))
         {
             log.error(DUPLICATED_ENTRY);
             throw new BadRequestException(DUPLICATED_ENTRY);
@@ -70,7 +87,7 @@ public class PetiteRestController {
         newEntry.setShorturl(BASE_URL+urlAlias);
         persistor.save(newEntry);
 
-        return new ResponseEntity<Object>(urlAlias, HttpStatus.OK);
+        return new ResponseEntity<>(urlAlias, HttpStatus.OK);
     }
 
 }
