@@ -88,6 +88,9 @@ public class PetiteRestController {
             throw new BadRequestException(ShortenerUtils.DUPLICATED_ENTRY);
         }
 
+        if (!newEntry.getShorturl().contains(ShortenerUtils.BASE_URL))
+            newEntry.setShorturl(ShortenerUtils.BASE_URL+newEntry.getShorturl());
+
         persistor.save(newEntry);
 
         return new ResponseEntity<>(newEntry.getShorturl(), HttpStatus.OK);
