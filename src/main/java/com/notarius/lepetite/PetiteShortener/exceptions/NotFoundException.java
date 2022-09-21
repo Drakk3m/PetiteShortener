@@ -1,6 +1,10 @@
 package com.notarius.lepetite.PetiteShortener.exceptions;
 
-public class NotFoundException extends Throwable {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class NotFoundException extends Exception {
     public NotFoundException(String message) {
         super(message);
     }
