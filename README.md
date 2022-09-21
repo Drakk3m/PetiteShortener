@@ -18,6 +18,7 @@ the project will create a new service that will expose 3 endpoint
 > will search for the shortened URL in the database and will redirect to the associated address  
 ### __POST__ _/s/assign_  
 > will assign an alias to a provided URL `probably usefull for a PRO version of the application` :wink:
+
 > __Body example__
 ``` json
 {
