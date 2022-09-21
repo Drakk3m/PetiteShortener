@@ -18,6 +18,7 @@ the project will create a new service that will expose 3 endpoint
 > will search for the shortened URL in the database and will redirect to the associated address  
 ### __POST__ _/s/assign_  
 > will assign an alias to a provided URL `probably usefull for a PRO version of the application` :wink:
+
 > __Body example__
 ``` json
 {
@@ -40,5 +41,4 @@ There are several ways to create a Shortener.
 For better understanding and using most of the capabilities needed, in this project we'll use the first option, so we can experiment a little with Java's JPA and... well... MongoDB
 
 # TODO
-1. Unit Tests `Sorry, had no time to finish the tests so it's better to remove them` 😢
 2. Swagger page with OpenApi documentation
